@@ -35,8 +35,8 @@
 當平台愈趨成熟後且使用者增長到一定程度，有一定觸及率後，可與公部門、企業、NGO合作，協助發佈相關農業資訊。
 
 ## 應用工具說明
-前端：Line front-end framework、Google map
-後端：Node.js、Line bot、Express、Mongodb
-設計：Photoshop、Illustrator
+* 前端：Line front-end framework、Google map
+* 後端：Node.js、Line bot、Express、Mongodb
+* 設計：Photoshop、Illustrator
 
 
