@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+    var map, infoWindow;
+    var markers = [];
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 15
+        });
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            var marker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                title:'這是總統府'
+               });
+            // infoWindow.setPosition(pos);
+            // infoWindow.setContent('Location found.');
+            // infoWindow.open(map);
+            map.setCenter(pos);
+            // marker.setMap(map);
+            getEvent();
+            
+
+
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      }
+
+
+
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+
+      getEvent = function (){
+        $.ajax({
+          url: "https://ngrok.kenlee.com.tw/getEvent",
+          type: 'GET',
+          dataType: "json",
+          contentType: 'application/json; charset=UTF-8',
+          data: {
+            
+          },
+          error: function(xhr) {
+            alert('請求發生錯誤');
+          },
+          success: function(response) {
+            let marker_config = [];
+            let markers = [];
+            console.log(response.events);
+                      //建立地圖 marker 的集合
+            response.events.forEach(element => {
+              let icon = "";
+              switch(element.eventType){
+                case "種菜":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/vege.png";
+                  break
+                case "拔草":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/work.png";
+                  break
+                case "摘水果":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/fruit.png";
+                  break
+                case "打工換宿":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/live.png";
+                  break
+                case "其他體驗":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/pure.png";
+                  break
+                case "農品販售":
+                  icon = "https://ngrok.kenlee.com.tw/public/images/sale.png";
+                  break
+              }
+              
+              marker_config.push(new google.maps.Marker({
+                position: {lat:parseFloat(element.location.latitude),lng:parseFloat(element.location.longitude)},
+                map: map,
+                title:element.eventName,
+                icon: {
+                      url: icon, // url
+                      scaledSize: new google.maps.Size(50, 50), // scaled size
+                      origin: new google.maps.Point(0,0), // origin
+                      anchor: new google.maps.Point(0, 0) // anchor
+                  }
+               })); 
+            });
+
+            //標出 marker
+            marker_config.forEach(element=>{
+              element.setMap(map);
+            });  
+          }
+        });
+      };
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJF8iX3mL_S4cBc6rtj2lHcuSkkj1BUfU&callback=initMap"
+    async defer></script>
+  </body>
+</html>
